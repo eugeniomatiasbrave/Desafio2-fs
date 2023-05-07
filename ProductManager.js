@@ -21,20 +21,14 @@ class ProductManager {
     }
 
     addProduct = async ( title, description, price, thumbnail, code, stock)=> {  
- 
        let newproducts= { id: this.#createId() , title, description, price, thumbnail, code, stock };
-
-
        this.#products.push(newproducts) // guardo el objeto en array vacio.
-
        const productsString = JSON.stringify(this.#products);  // guardo en formato string
        await fs.promises.writeFile(this.patch, productsString); // guardo en archivo.JSON
-
-    
     };
 
-    getProducts = async () => {
 
+    getProducts = async () => {
         const productsFile = await fs.promises.readFile(this.patch, "utf-8");
         const prodRead = JSON.parse(productsFile); // paso el string en formato objeto.
         console.log(prodRead)
@@ -48,30 +42,33 @@ class ProductManager {
         const searching = prodRead.find(prod => prod.id === id); // filtro en busca de UN ID.
         searching??console.log("Not found");  // si no lo encuentra , respuesta no encontrado. Uso ternario.
        
-    }    
-
-}
-  
-
-//  
-
-     //   if (this.#products.find(prod => prod.code === code)) {  // permite encontrar codigo repetido
-     //       return console.log( `The code ${code} is repeated`); 
-     //          }
-
-
-
-   //     if (!Object.values(newproducts).includes(undefined)) {  // todos los campos son obligatorios tienen un valor, si no falta un valor todo OK, sino sera un valor UNDEFINED. 
- 
-    //        this.products.push(newproducts);
-   
-    //       } else {  console.log("All fields are required")}
-   
-        //return  newproducts;
-
-    //  }
-
+    }  
     
+      
+/*  updateProduct = async() => {    // ...........................SIN TERMINAR !!!!
+        const DB  = { 
+            id: 5,
+            title: "Short 2", 
+            description: "T. XXL", 
+            price:2200, 
+            thumbnail: "thumbnail 5", 
+            code: "abc128", 
+            stock: 15 };
+        await fs.promises.appendFile( this.patch , JSON.stringify(DB));
+    }  */
+
+
+    deleteProduct = async(id) => {
+        const productsFile = await fs.promises.readFile(this.patch, "utf-8");  // busco en el archivo
+        const prodRead = JSON.parse(productsFile); // parseo
+        let filtering= prodRead.filter(prodF => prodF.id != id);  // filtro el id que tengo como parametro par aeliminarlo
+       
+        const productsString = JSON.stringify(filtering); // lo vuelvo a guardar en formato string.
+        await fs.promises.writeFile(this.patch, productsString); // guardo en archivo.JSON sin el id que filtre.
+
+    };
+}
+
 const productM = new ProductManager(); 
 
 //productM.addProduct("shorts", "T. XL", 1000, "thumbnail 1", "abc124", 20);
@@ -82,5 +79,6 @@ const productM = new ProductManager();
 ///Testeos:
 
 //productM.getProducts(); // Me trae todos los productos del JSON en formato objeto.
-//productM.getProductById(2); // busco el ID que quiero en el JSON.
+//productM.getProductById(2); // busco el ID que quiero en el JSON parseado.
 //productM.getProductById(8); // ID (8) no encontrado como respuesta.
+//productM.deleteProduct(4) ; // elimino el id (4) usando filter y reescribiendo.
